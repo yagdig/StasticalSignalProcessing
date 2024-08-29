@@ -1,0 +1,249 @@
+\documentclass[fontset=windows]{article}
+\usepackage[margin=1in]{geometry}%设置边距，符合Word设定
+\usepackage[UTF8]{ctex}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\numberwithin{figure}{section}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{float}
+\usepackage{graphicx}%插入图片
+\usepackage[dvipsnames]{xcolor}
+\usepackage{authblk}
+\usepackage{listings,matlab-prettifier}
+\lstset{
+	language=Matlab, % 设置代码语言为Matlab
+    basicstyle=\ttfamily, % 设置字体为等宽字体
+    numbers=left, % 行号在左边显示
+    numberstyle=\tiny, % 设置行号字体大小
+    stepnumber=1, % 行号递增步长
+    numbersep=5pt, % 行号到代码的距离
+    backgroundcolor=\color{gray!10}, % 设置代码的背景颜色
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single, % 设置代码框
+    rulecolor=\color{black},
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=true,
+    title=\lstname,
+	keywordstyle=\bfseries\color{NavyBlue},
+	morekeywords={var,};
+	emphstyle=\bfseries\color{Rhodamine}, % 强调词样式设置
+    commentstyle=\itshape\color{black!50!white}, % 设置注释样式，斜体，浅灰色
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 设置字符串样式
+	columns=flexible,}
+\graphicspath{{Figures5/}}%文章所用图片在当前目录下的 Figures目录
+
+\usepackage{hyperref} % 对目录生成链接，注：该宏包可能与其他宏包冲突，故放在所有引用的宏包之后
+\hypersetup{colorlinks = true,  % 将链接文字带颜色
+	linkcolor=black, % 将链接文字黑色
+	bookmarksopen = true, % 展开书签
+	bookmarksnumbered = true, % 书签带章节编号
+	} % 作者
+\bibliographystyle{plain}% 参考文献引用格式
+
+\renewcommand{\contentsname}{\centerline{目录}} %经过设置word格式后，将目录标题居中
+
+\title{\heiti\zihao{2} 《统计信号处理》第五教学单元研讨题}
+\author{杨 鼎,韦可雷,高司博,高涵博}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%\begin{abstract}
+%	\lipsum[2]
+%\end{abstract}
+
+%\tableofcontents
+%\setcounter{page}{0}
+%\newpage
+
+\section*{研讨题1}
+对于高斯白噪声背景下确定信号检测问题，通过理论推导和仿真，分析检测性能与信噪比、虚警概率之间的关系。如果噪声为非高斯色噪声，试讨论：相对于高斯白噪声，非高斯、有色会试检测性能如何变化？
+
+
+\section*{研讨题2}
+考虑二元假设
+\begin{align*}
+    H_0  & :\quad z=-1+n \\
+    z[n] & :\quad z=1+n
+\end{align*}
+其中n是均值为零，方差为1/2的高斯噪声，两种假设先验概率相等，代价因子分别为\(C_{00}=1,C_{10}=4,C_{11}=2,C_{01}=8\)。
+
+\subsection*{(1)求贝叶斯准则判决式和平均代价C1}
+两种假设下的似然函数分别为
+\begin{align}
+    p(\mathbf{z}|\mathcal{H}_0) & =\frac{1}{\sqrt{\pi}}\exp(-(z+1)^2) \\
+    p(\mathbf{z}|\mathcal{H}_1) & =\frac{1}{\sqrt{\pi}}\exp(-(z-1)^2)
+\end{align}
+则似然比为
+\begin{align*}
+    \Lambda(\mathbf{z})=\frac{p(\mathbf{z}|\mathcal{H}_1)}{p(\mathbf{z}|\mathcal{H}_0)}=\exp(4\mathbf{z})
+\end{align*}
+判决门限为
+\begin{align*}
+    \eta=\frac{(C_{10}-C_{00})q}{(C_{01}-C_{11})p}
+\end{align*}
+其中先验概率\(q=p\)。所以判决门限\(\eta=3/6=0.5\)。判决式\(z\begin{matrix}\mathcal{H}_1\\>\\<\\\mathcal{H_0}\end{matrix}\frac{\ln (\eta)}{4}\)，即\(z\begin{matrix}\mathcal{H}_1\\>\\<\\\mathcal{H_0}\end{matrix}-0.1733\)。
+
+下面求平均代价，先计算虚警概率
+\begin{align*}
+    \alpha=\int_{-0.1733}^{\infty}p(z|\mathcal{H}_0)dz=0.1212
+\end{align*}
+检测概率
+\begin{align*}
+    P_D=\int_{-0.1733}^{\infty}p(z|\mathcal{H}_1)dz=0.9515
+\end{align*}
+漏警概率
+\begin{align*}
+    \beta=\int_{-\infty}^{-0.1733}p(z|\mathcal{H}_1)dz=1-P_D=0.0485
+\end{align*}
+另外\begin{align*}
+    P_c=\int_{-\infty}^{-0.1733}p(z|\mathcal{H}_0)dz=1-\alpha=0.8788
+\end{align*}
+平均代价\(C1=(C_{00}P_c+C_{10}\alpha)q+(C_{01}\beta+C_{11}P_D)p=3.6546p\)
+其中\(p=q=0.5\)，所以\(C1=1.8723\)。
+\subsection*{(2)将判决门限分别增加0.002和减小0.002,分别计算平均代价C2和C3,与C1进行比较。}
+当判决门限增加0.02时，\(\alpha=0.1156\),检测概率\(P_D=0.9486,P_c=1-\alpha=0.8844,\beta=1-P_D=0.0514\)
+平均代价为\(C2=(C_{00}P_c+C_{10}\alpha)q+(C_{01}\beta+C_{11}P_D)=1.8276>C1\)。
+
+当判决门限减小0.02时，\(\alpha=0.127,P_D=0.9543,P_c=1-\alpha=0.873,\beta=1-P_D=0.0457\)。
+平均代价\(C3=(C_{00}P_c+C_{10}\alpha)q+(C_01\beta+C_{11}P_D)=1.8276>C1\)。
+
+通过计算发现，贝叶斯准则门限的代价C1最小。
+
+\section*{研讨题3}
+考虑二元假设
+\begin{align*}
+    H_0 & :z[k]=n[k]                            \\
+    H_1 & :z[k]=Ar^k+n[k]\quad k=0,1,\cdots N-1
+\end{align*}
+噪声是服从\(n(k)\sim \mathcal{N}(0,\sigma^2)\)的WGN。
+
+1、若\(r(0<r<1)\)已知，且A已知，求解NP判决式。绘出当\(A=r=1\)，且\(\sigma^2=1\)时，观测数据量\(N=10\)和\(N=5\)时的ROC曲线；绘出当\(A=r=1\)，且\(\sigma^2=1\)时\(P_{FA}=0.01\)和\(P_{FA}=0.0001\)检测性能曲线。
+
+2、若\(r=1,A\)为随机变量，已知服从\(A\sim \mathcal{N}(\mu_A,\sigma_A^2)\)时额判决式；
+
+3、若\(r(0<r<1)\)已知，A未知，求解GLRT判决式，是否具有CFAR性质？
+
+\section*{研讨题4}
+考虑二元假设
+\begin{align*}
+    H_0 & :\sigma^2=\sigma^2_0 \\
+    H_1 & :\sigma^2>\sigma^2_0
+\end{align*}
+其中观测数据样本为独立同分布，\(z[n]\sim \mathcal{N}(0,\sigma^2),\quad n=0,1,\ldots ,N-1。\)
+
+\subsection*{(1)求广义似然比\(L_G(\mathbf{z})\)，并证明\(L_G(\mathbf{z})\geqslant1\)恒成立。}
+
+容易求得最大似然估计量为\(\hat{\sigma}_1^2=\sum_{n=0}^{N-1}z^2[n]/N\),
+广义似然比
+\begin{align*}
+    L_G(\mathbf{z})
+     & =\frac{p(\mathbf{z};\hat{\sigma}_1,\mathcal{H}_1)}
+    {p(\mathbf{z};;\hat{\sigma}_0,\mathcal{H}_0)}                                                             \\
+     & =\frac{(2\pi \hat{\sigma}_1^2)^{(-N/2)}\exp \left\{ -\sum_{n=0}^{N-1}z^2[n]/2\hat{\sigma}_1^2\right\}}
+    {(2\pi \sigma_0^2)^{(-N/2)}\exp \left\{ -\sum_{n=0}^{N-1}z^2[n]/2\sigma^2_0\right\}}                      \\
+     & =\bigg(\frac{\hat{\sigma}_1^2}{\sigma_0^2}\bigg)^{-N/2}
+    \exp\left\{\frac{N}{2}(\frac{\hat{\sigma}_1^2}{\sigma_0^2}-1) \right\}
+\end{align*}
+而\(\hat{\sigma}_1^2=\sum_{n=0}^{N-1}z^2[n]/N\)，所以
+\begin{align*}
+    \ln L_G(\mathbf{z})=-\frac{N}{2}\ln\frac{\hat{\sigma}_1^2}{\sigma_0^2}+\frac{N}{2}(\frac{\hat{\sigma}_1^2}{\sigma_0^2}-1)
+\end{align*}
+令\(\frac{\partial \ln L_G(\mathbf{z})}{\partial \hat{\sigma}_1^2}=0\),即
+\begin{align*}
+    \frac{\partial \ln L_G(\mathbf{z})}{\partial \hat{\sigma}_1^2}=
+    -\frac{N}{2\hat{\sigma}_1^2}+\frac{N}{2\sigma_0^2}=0
+\end{align*}
+得到\(\hat{\sigma}_1^2=\sigma_0^2\)，这时\(\frac{\partial^2 \ln L_G(\mathbf{z})}{(\partial \hat{\sigma}_1^2)^2}=\frac{N}{2(\sigma^2_1)^2}>0\),所以对数广义似然函数的最小值为\(\ln L_G(\mathbf{z})|_{\hat{\sigma}_1^2=\sigma_0^2}=0\)，即\(L_G(\mathbf{z})\geqslant1\)。
+
+\subsection*{(2)求广义似然比检验的检验统计量，判决准测应当采用NP准测还是最小错误概率准则(两种假设的先验概率相等)，为什么？}
+根据(1)中结果，广义似然比检验的检验统计量
+\begin{align*}
+    L_G(\mathbf{z})=\bigg(\frac{\hat{\sigma}_1^2}{\sigma_0^2}\bigg)^{-N/2}\exp\left\{\frac{N}{2}(\frac{\hat{\sigma}_1^2}{\sigma_0^2}-1) \right\}>\gamma
+\end{align*}
+则GLRT判\(\mathcal{H}_1\)，等价于
+\begin{align*}
+    \ln L_G(\mathbf{z})=-\frac{N}{2}\ln\frac{\hat{\sigma}_1^2}{\sigma_0^2}+\frac{N}{2}(\frac{\hat{\sigma}_1^2}{\sigma_0^2}-1)>\ln \gamma
+\end{align*}
+
+由于门限与\(\sigma^2_1\)有关，不满足选取\(\gamma\)满足虚警概率\(\alpha\)为常数的约束条件，所以不能用NP准测。这时可以考虑用最小错误概率准测，对\(\sigma^2_1\)指定先验PDF。
+\subsection*{(3)求局部最大势(LMP)检验，分析检验统计量与充分统计量的关系}
+局部最大势检验的检验统计量为
+\begin{align*}
+    T_{LMP}(\mathbf{z})=\frac{\frac{\partial \ln p(\mathbf{z;\sigma^2})}{\partial \sigma^2}|_{\sigma^2=\sigma^2_0}}{\sqrt{I(\sigma^2_0)}}
+\end{align*}
+而
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z;\sigma^2})}{\partial \sigma^2}
+     & =\frac{\partial }{\partial \sigma^2}\ln \left\{(2\pi \sigma^2)^{-N/2}\exp\left[ -\frac{\sum_{n=0}^{N-1}z^2[n]}{2\sigma^2}\right]\right\} \\
+     & =\frac{\partial }{\partial \sigma^2}\left[-\frac{N}{2} \ln(2\pi \sigma^2)-\frac{\sum_{n=0}^{N-1}z^2[n]}{2\sigma^2}\right]                \\
+     & =\frac{\sum_{n=0}^{N-1}z^2[n]}{2(\sigma^2)^2}-\frac{N}{2 \sigma^2}                                                                       \\
+     & =\frac{\sum_{n=0}^{N-1}z^2[n]-N\sigma^2 }{2 (\sigma^2)^2}
+\end{align*}
+Fisher信息
+\begin{align*}
+    I(\sigma_0^2)
+     & =-E\left[ \frac{\partial^2 \ln p(\mathbf{z;\sigma^2})}{(\partial \sigma^2)^2}\right]|_{\sigma^2=\sigma^2_0}  \\
+     & =-E\left[ \frac{N}{2 (\sigma^2)^2}-\frac{\sum_{n=0}^{N-1}z^2[n]}{(\sigma^2)^3}\right]|_{\sigma^2=\sigma^2_0} \\
+     & =\frac{N}{2 (\sigma^2_0)^2}
+\end{align*}
+所以
+\begin{align*}
+    T_{LMP}(\mathbf{z})
+     & =\frac{\sum_{n=0}^{N-1}z^2[n]-N\sigma^2 }{2 (\sigma^2)^2}\cdot\frac{\sqrt{2}\sigma_0^2}{\sqrt{N}} \\
+     & =\frac{\sqrt{N}}{\sqrt{2}\sigma^2_0}(\frac{1}{N}\sum_{n=0}^{N-1}z^2[n]-\sigma^2_0)                \\
+     & =\frac{\sqrt{N}}{\sqrt{2}\sigma^2_0}(\hat{\sigma}^2-\sigma^2_0)
+\end{align*}
+
+根据Neyman-Fisher因子分解定理，
+\begin{align*}
+    p(\mathbf{z};\sigma^2)
+     & =\frac{1}{(2\pi \sigma^2)^{N/2}}\exp\left\{ -\frac{\sum_{n=0}^{N-1}z^2[n]}{2\sigma^2}\right\}        \\
+     & =\frac{1}{(2\pi \sigma^2)^{N/2}}\exp\left\{ -\frac{\sum_{n=0}^{N-1}z^2[n]}{2\sigma^2}\right\}\cdot 1 \\
+     & =g(T(\mathbf{z},\sigma^2))\cdot h(\mathbf{z})
+\end{align*}
+充分统计量为
+\begin{align*}
+    T(\mathbf{z})=\sum_{n=0}^{N-1}z^2[n]
+\end{align*}
+所以检验统计量
+\begin{align*}
+    T_{LMP}(\mathbf{z})=\frac{\sqrt{N}}{\sqrt{2}\sigma^2_0}(\frac{1}{N}T(\mathbf{z})-\sigma^2_0)
+\end{align*}
+是充分统计量的函数。这时因为充分统计量包含了在数据中做出判决所需要的关于方差的所有信息。
+\subsection*{(4)存在一致最大势检验吗？}
+考虑一致最大势检验：
+\begin{align*}
+    \Lambda(\mathbf{z})
+     & =\frac{p(\mathbf{z;\sigma^2_1,\mathcal{H}_1})}{p(\mathbf{z;\mathcal{H}_0})}                            \\
+     & =\frac{(2\pi \hat{\sigma}_1^2)^{(-N/2)}\exp \left\{ -\sum_{n=0}^{N-1}z^2[n]/2\hat{\sigma}_1^2\right\}}
+    {(2\pi \sigma_0^2)^{(-N/2)}
+    \exp \left\{ -\sum_{n=0}^{N-1}z^2[n]/2\sigma^2_0\right\}}                                                 \\
+     & =\bigg(\frac{\sigma_1^2}{\sigma_0^2}\bigg)^{-N/2}
+    \exp \left\{\frac{\sum_{n=0}^{N-1}z^2[n]}{2}(\sigma_0^{-2}-\sigma_1^{-2}) \right\}                        \\
+     & >\gamma
+\end{align*}
+两边取对数得到
+\begin{align*}
+    -\frac{N}{2}\ln\bigg(\frac{\sigma_1^2}{\sigma_0^2}\bigg)+
+    \frac{\sum_{n=0}^{N-1}z^2[n]}{2}(\sigma_0^{-2}-\sigma_1^{-2})>\ln\gamma
+\end{align*}
+
+由于\(\sigma_1^2>\sigma_1^2\),所以\(\sigma_0^{-2}-\sigma_1^{-2}>0\),整理得到
+\begin{align*}
+    \frac{1}{N}\sum_{n=0}^{N-1}z^2[n]>\left[\frac{2}{N}\ln\gamma+\ln\bigg(\frac{\sigma_1^2}{\sigma_0^2}\bigg)\right](\sigma_0^{-2}-\sigma_1^{-2})^{-1}=\gamma^{\prime}
+\end{align*}
+检验统计量刚好是方差的估计。
+
+参考例5.1和例6.1。在\(\mathcal{H}_0\)条件下，\(T(\mathbf{z})=\frac{1}{N}\sum_{n=0}^{N-1}z^2[n]\sim \mathcal{N}(0,\sigma^2/N)\),具有确定的分布,\(P_{FA}=Q(\frac{N\gamma^{\prime}}{\sigma_0^2})\)，所以\(\gamma^{\prime}=\frac{\sigma^2_0}{N}Q^{-1}(P_{FA})\)与\(\sigma_1^2\)无关。由于在\(\mathcal{H}_0\)条件下，\(T(\mathbf{z})\)的PDF与\(\sigma_1^2\)无关，根据给定的虚警，可以计算出门限值，它是与\(\sigma_1^2\)无关的。那么给定的虚警概率\(P_{FA}\)时，对于任意的\(\sigma_1^2\),如果\(T(\mathbf{z}>\gamma^{\prime})\)则判别\(\mathcal{H}_1\)的检测器具有最高的\(P_D\)，所以存在一致最大势检验。
+
+
+\bibliography{books}
+\end{document}

@@ -1,0 +1,197 @@
+\documentclass[fontset=windows]{article}
+\usepackage[margin=1in]{geometry}%设置边距，符合Word设定
+\usepackage[UTF8]{ctex}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\numberwithin{figure}{section}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{float}
+\usepackage{graphicx}%插入图片
+\usepackage[dvipsnames]{xcolor}
+\usepackage{authblk}
+\usepackage{listings,matlab-prettifier}
+\lstset{
+	language=Matlab, % 设置代码语言为Matlab
+    basicstyle=\ttfamily, % 设置字体为等宽字体
+    numbers=left, % 行号在左边显示
+    numberstyle=\tiny, % 设置行号字体大小
+    stepnumber=1, % 行号递增步长
+    numbersep=5pt, % 行号到代码的距离
+    backgroundcolor=\color{gray!10}, % 设置代码的背景颜色
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single, % 设置代码框
+    rulecolor=\color{black},
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=true,
+    title=\lstname,
+	keywordstyle=\bfseries\color{NavyBlue},
+	morekeywords={var,};
+	emphstyle=\bfseries\color{Rhodamine}, % 强调词样式设置
+    commentstyle=\itshape\color{black!50!white}, % 设置注释样式，斜体，浅灰色
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 设置字符串样式
+	columns=flexible,}
+\graphicspath{{Figures2/}}%文章所用图片在当前目录下的 Figures目录
+
+\usepackage{hyperref} % 对目录生成链接，注：该宏包可能与其他宏包冲突，故放在所有引用的宏包之后
+\hypersetup{colorlinks = true,  % 将链接文字带颜色
+	linkcolor=black, % 将链接文字黑色
+	bookmarksopen = true, % 展开书签
+	bookmarksnumbered = true, % 书签带章节编号
+	} % 作者
+\bibliographystyle{plain}% 参考文献引用格式
+
+\renewcommand{\contentsname}{\centerline{目录}} %经过设置word格式后，将目录标题居中
+
+\title{\heiti\zihao{2} 《统计信号处理》讨论题一：确定性参数估计}
+\author{杨 鼎}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%\begin{abstract}
+%	\lipsum[2]
+%\end{abstract}
+
+%\tableofcontents
+%\setcounter{page}{0}
+%\newpage
+
+考虑高斯白噪声中的指数信号参数估计问题
+\begin{align*}
+    z_n=Ar^n+w_n,n=0,1,\dots,N-1
+\end{align*}
+其中\(w_n \overset{i,i,d}{\sim} \mathcal{N}(0,\sigma^2),0<r<1,\sigma^2>0\)均为已知参数。
+试考虑可从哪些角度获得参数A的估计量？如何评价你所获得估计量的性能？
+\section*{1.获得A的估计量}
+重写为矢量形式
+\begin{align*}
+    \mathbf{z}=A\mathbf{H}+\mathbf{w}
+\end{align*}
+其中
+\begin{align*}
+    \mathbf{z} & =\begin{bmatrix}
+        z_1 & z_2 & \dots & z_{N-1}
+    \end{bmatrix}^T \\
+    \mathbf{H} & =\begin{bmatrix}
+        1 & r & \dots & r^{N-1}
+    \end{bmatrix}^T \\
+    \mathbf{w} & =\begin{bmatrix}
+        w_1 & w_2 & \dots & w_{N-1}
+    \end{bmatrix}^T
+\end{align*}
+
+由\(\mathbf{w} \sim \mathcal{N}(\mathbf{0},\sigma^2\mathbf{I})\)可得，PDF\(p(\mathbf{z};A)\)
+\begin{align*}
+    p(\mathbf{z};A)=\frac{1}{(2\pi \sigma^2)^{\frac{N}{2}}}
+    \exp\left\{-\frac{1}{2\sigma^2}(\mathbf{z}-A\mathbf{H})^T(\mathbf{z}-A\mathbf{H})\right\}
+\end{align*}
+求一次导得到：
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};A)}{\partial A}=\frac{\mathbf{H}^T}{\sigma^2}(\mathbf{z}-A\mathbf{H})
+\end{align*}
+
+显然这是一个关于未知参数A的线性模型，因此可以用多种方式获得参数A的估计。
+
+\subsection*{(1)CRLB}
+
+首先验证正则条件
+\begin{align*}
+    E\left[\frac{\partial \ln p(\mathbf{x};A)}{\partial A}\right]
+    =E\left[\frac{\mathbf{H}^T}{\sigma^2}(\mathbf{z}-A\mathbf{H})\right]
+    =\frac{\mathbf{H}^T}{\sigma^2}E\left[(\mathbf{z}-A\mathbf{H})\right]=0
+\end{align*}
+则Fisher信息为
+\begin{align*}
+    I(A) & =-E\left[\frac{\partial^2  \ln p(\mathbf{x};A)}{\partial A^2}\right] \\
+         & =\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}                             \\
+         & =\frac{\sum_{n=0}^{N-1}r^{2n}}{\sigma^2}                             \\
+         & =\frac{1-r^{2N}}{(1-r^2)\sigma^2}
+\end{align*}
+PDF的一阶偏导数可以写为
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};A)}{\partial A}
+     & =\frac{\mathbf{H}^T}{\sigma^2}(\mathbf{z}-A\mathbf{H}) \\
+     & =\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}
+    ((\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T\mathbf{z}-A)   \\
+     & =I(A)(g(\mathbf{z})-A)
+\end{align*}
+其中\(\mathbf{H}^T\mathbf{H}=\sum_{n=0}^{N-1}r^{2n}=\frac{1-r^{2n}}{1-r}\),
+因此\(\hat{A}=(\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T\mathbf{z}\)。
+方差达到CRLB，为
+\begin{align*}
+    var(\hat{A})=\frac{1}{I(A)}=\frac{(1-r^2)\sigma^2}{1-r^{2n}}
+\end{align*}
+\subsection*{(2)BLUE}
+
+限定估计量A与数据\(\mathbf{z}\)呈线性\(A=\mathbf{a}^T\mathbf{z}\),在无偏的约束条件下，
+\(E(\mathbf{z})=A\mathbf{H}\).
+
+由于\(\mathbf{w}\sim \mathcal{N}(0,\sigma^2\mathbf{I})\),协方差矩阵\(\mathbf{C}=\sigma^2 \mathbf{I}\),
+则\(\mathbf{C^{-1}}=\sigma^{-2}\mathbf{I}\)。
+
+BLUE为
+\begin{align*}
+    \hat{A}
+     & =\frac{\mathbf{H}^T \mathbf{C}^{-1}\mathbf{z}}{\mathbf{H}^T\mathbf{C}^{-1}\mathbf{H}} \\
+     & =(\mathbf{H}^T \mathbf{H})^{-1}\mathbf{H}\mathbf{z}
+\end{align*}
+方差
+\begin{align*}
+    var(\hat{A})
+     & =\frac{1}{\mathbf{H}^T \mathbf{C}^{-1} \mathbf{H}} \\
+     & =\frac{(1-r^2)\sigma^2}{1-r^{2n}}
+\end{align*}
+
+\subsection*{(3)MLE}
+求解似然方程
+\begin{align*}
+    \frac{\mathbf{H}^T}{\sigma^2}(\mathbf{z}-A\mathbf{H})=\mathbf{0}
+\end{align*}
+解得
+\begin{align*}
+    \hat{A}=(\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T \mathbf{z}
+\end{align*}
+
+验证二阶导数
+\begin{align*}
+    \frac{\partial^2 \ln p(\mathbf{z};A)}{\partial A^2}
+    =-\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}<0
+\end{align*}
+因此A的最大似然估计为\(\hat{A}=(\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T \mathbf{z}\)。
+
+\subsection*{(4)LSE}
+误差指标函数
+\begin{align*}
+    \mathbf{J}(A)=(\mathbf{z}-A\mathbf{H})^T(\mathbf{z}-A\mathbf{H})
+\end{align*}
+令其梯度\(\frac{\partial\mathbf{J}(A)}{\partial A}=0\)得到，
+LSE为\(\hat{A}=(\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T\mathbf{z}\)。
+
+\section*{2.如何评价你所获得估计量的性能}
+
+以上四种方法求得的A的估计量\(\hat{A}\)均相同，且均是无偏的。
+
+在(1)中，由于达到了CRLB,因此它是有效估计量,并且它也是MVU估计量。
+
+根据Neyman-Fisher因子分解定理，由于PDF可以分解为
+\begin{align*}
+    p(\mathbf{z};A)
+     & =\frac{1}{(2\pi \sigma^2)^{\frac{N}{2}}}
+    \exp\left\{-\frac{1}{2\sigma^2}(\mathbf{z}-A\mathbf{H})^T(\mathbf{z}-A\mathbf{H})\right\} \\
+     & =\frac{1}{(2\pi \sigma^2)^{\frac{N}{2}}}
+    \exp\left\{-\frac{1}{2\sigma^2}(A^2\mathbf{H}^T\mathbf{H}-2A\mathbf{z}^T\mathbf{H})\right\}
+    \cdot\exp\left\{-\frac{\mathbf{z}^T\mathbf{z}}{2\sigma^2})\right\}                        \\
+     & =g(T(\mathbf{z}),A)h(\mathbf{z})
+\end{align*}
+因此\(T(\mathbf{z})=\mathbf{H}^T\mathbf{z}\)是A的充分统计量，
+\(\hat{A}=(\mathbf{H}^T\mathbf{H})^{-1}T(\mathbf{z})\)也是A的充分统计量。
+
+\bibliography{books}
+\end{document}

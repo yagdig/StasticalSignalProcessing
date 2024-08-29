@@ -1,0 +1,156 @@
+\documentclass[fontset=windows]{article}
+\usepackage[margin=1in]{geometry}%设置边距，符合Word设定
+\usepackage[UTF8]{ctex}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\numberwithin{figure}{section}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{float}
+\usepackage{graphicx}%插入图片
+\usepackage[dvipsnames]{xcolor}
+\usepackage{authblk}
+\usepackage{listings,matlab-prettifier}
+\lstset{
+	language=Matlab, % 设置代码语言为Matlab
+    basicstyle=\ttfamily, % 设置字体为等宽字体
+    numbers=left, % 行号在左边显示
+    numberstyle=\tiny, % 设置行号字体大小
+    stepnumber=1, % 行号递增步长
+    numbersep=5pt, % 行号到代码的距离
+    backgroundcolor=\color{gray!10}, % 设置代码的背景颜色
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single, % 设置代码框
+    rulecolor=\color{black},
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=true,
+    title=\lstname,
+	keywordstyle=\bfseries\color{NavyBlue},
+	morekeywords={var,};
+	emphstyle=\bfseries\color{Rhodamine}, % 强调词样式设置
+    commentstyle=\itshape\color{black!50!white}, % 设置注释样式，斜体，浅灰色
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 设置字符串样式
+	columns=flexible,}
+\graphicspath{{Figures2/}}%文章所用图片在当前目录下的 Figures目录
+
+\usepackage{hyperref} % 对目录生成链接，注：该宏包可能与其他宏包冲突，故放在所有引用的宏包之后
+\hypersetup{colorlinks = true,  % 将链接文字带颜色
+	linkcolor=black, % 将链接文字黑色
+	bookmarksopen = true, % 展开书签
+	bookmarksnumbered = true, % 书签带章节编号
+	} % 作者
+\bibliographystyle{plain}% 参考文献引用格式
+
+\renewcommand{\contentsname}{\centerline{目录}} %经过设置word格式后，将目录标题居中
+
+\title{\heiti\zihao{2} 《统计信号处理》讨论题二：贝叶斯估计}
+\author{杨 鼎}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%\begin{abstract}
+%	\lipsum[2]
+%\end{abstract}
+
+%\tableofcontents
+%\setcounter{page}{0}
+%\newpage
+
+贝叶斯估计和非贝叶斯估计的区别是什么？贝叶斯估计的先验信息如何获得？对于高斯白噪声中指数信号参数估计问题
+\begin{align*}
+    z_n=Ar^n+w_n,\quad n=0,1,\cdots,N-1
+\end{align*}
+其中\(A\sim N(0,\sigma^2),w_n\overset{i,i,d}{\sim}\)，A与\(w_n\)相互独立；\(0<r<1,\sigma^2>0,\sigma^2_A>0\)均为已知参数。试求参数A的最小均方估计和最大后验概率估计，并分析二者的关系。若对参数A没有更多额先验信息时可如何处理？
+
+\section*{1.贝叶斯估计和非贝叶斯估计的区别是什么？贝叶斯估计的先验信息如何获得？}
+
+贝叶斯估计和非贝叶斯估计的区别是有无先验信息。
+
+贝叶斯估计的先验信息通常是建立在物理约束的基础上；也可以从数据估计先验，称为经验贝叶斯。
+
+\section*{2.对于高斯白噪声中指数信号参数估计问题
+  \begin{align*}
+      z_n=Ar^n+w_n,\quad n=0,1,\cdots,N-1
+  \end{align*}
+  其中\(A\sim \mathcal{N}(0,\sigma^2),w_n\overset{i,i,d}{\sim}\mathcal{N}(0,\sigma^2)\)，A与\(w_n\)相互独立；\(0<r<1,\sigma^2>0,\sigma^2_A>0\)均为已知参数。试求参数A的最小均方估计和最大后验概率估计，并分析二者的关系。若对参数A没有更多额先验信息时可如何处理？}
+
+\subsection*{(1)参数A的最小均方估计}
+观测模型用矢量形式表示
+\begin{align*}
+    \mathbf{Z}=A\mathbf{H}+\mathbf{w}
+\end{align*}
+其中
+\begin{align*}
+    \mathbf{Z} & =\begin{bmatrix}z_0&z_1&\cdots&z_{N-1}\end{bmatrix}^T \\
+    \mathbf{w} & =\begin{bmatrix}w_0&w_1&\cdots&w_{N-1}\end{bmatrix}^T \\
+    \mathbf{H} & =\begin{bmatrix}r_0&r_1&r_2&\cdots&r^{N-1}\end{bmatrix}^T
+\end{align*}
+由于\(E(A)=0,E(\mathbf{w})=\mathbf{0},E(\mathbf{Z})=\mathbf{0}\),则
+\begin{align*}
+    \mathbf{C}_{A\mathbf{Z}}
+     & =E[A(\mathbf{Z}-E(\mathbf{Z}))^T] \\
+     & =E[A(A\mathbf{H}+\mathbf{w})^T]   \\
+     & =E[A^2\mathbf{H}^T]               \\
+     & =\sigma^2_A\mathbf{H}^T
+\end{align*}
+
+\begin{align*}
+    \mathbf{C}_{\mathbf{Z}}
+     & =E[(\mathbf{Z}-E(\mathbf{Z}))(\mathbf{Z}-E(\mathbf{Z}))^T] \\
+     & =E[(A\mathbf{H}+\mathbf{w})(A\mathbf{H}+\mathbf{w})^T]     \\
+     & =E[A^2\mathbf{H}\mathbf{H}^T]+E[\mathbf{w}\mathbf{w}^T]    \\
+     & =\sigma^2_A\mathbf{HH}^T+\sigma^2\mathbf{I}
+\end{align*}
+
+最小MSE估计量
+\begin{align*}
+    \hat{A}=E(A|\mathbf{Z})
+     & =E(\mathbf{A})+\mathbf{C}_{A\mathbf{Z}}\mathbf{C}_{\mathbf{Z}}^{-1}(\mathbf{Z}-E(\mathbf{Z}))                 \\
+     & =\sigma_A^2\mathbf{H}^T(\sigma^2_A\mathbf{HH}^T+\sigma^2\mathbf{I})^{-1}\mathbf{Z}                            \\
+     & =\frac{\sigma_A^2}{\sigma^2}\mathbf{H}^T(\frac{\sigma_A^2}{\sigma^2}\mathbf{HH}^T+\mathbf{I})^{-1}\mathbf{Z}  \\
+     & =\frac{\sigma_A^2}{\sigma^2}\mathbf{H}^T(\mathbf{I}-\frac{\sigma_A^2}{\sigma^2}\mathbf{H}
+    (\mathbf{I}+\frac{\sigma_A^2}{\sigma^2}\mathbf{H}^T\mathbf{H})^{-1}\mathbf{H}^T)\mathbf{Z}                       \\
+     & =\frac{\sigma_A^2}{\sigma^2}\mathbf{H}^T(\mathbf{I}-\frac{\sigma_A^2/\sigma^2\mathbf{H}\mathbf{H}^T}
+    {\mathbf{I}+\sigma_A^2/\sigma^2\mathbf{H}^T\mathbf{H}})\mathbf{Z}                                                \\
+     & =\frac{\sigma_A^2}{\sigma^2}(\mathbf{H}^T-\frac{\sigma_A^2/\sigma^2\mathbf{H}^T\mathbf{H}\mathbf{H}^T}
+    {\mathbf{I}+\sigma_A^2/\sigma^2\mathbf{H}^T\mathbf{H}})\mathbf{Z}                                                \\
+     & =\frac{\sigma_A^2}{\sigma^2}(1-\frac{\sigma_A^2/\sigma^2\mathbf{H}^T\mathbf{H}}
+    {1+\sigma_A^2/\sigma^2\mathbf{H}^T\mathbf{H}})\mathbf{H}^T\mathbf{Z}                                             \\
+     & =\frac{\sigma_A^2}{\sigma^2}\frac{\sigma^2}{\sigma^2+\sigma^2_A+\mathbf{H}^T\mathbf{H}}\mathbf{H}^T\mathbf{Z} \\
+     & =\frac{\sigma^2_A}{\sigma^2_A\frac{1-r^{2N}}{1-r^2}+\sigma^2}\sum_{n=0}^{N-1}r_nz_n
+\end{align*}
+其中用到了矩阵求逆引理\((\mathbf{A}+\mathbf{BCD})^{-1}=\mathbf{A}^{-1}-\mathbf{A}^{-1}\mathbf{B}(\mathbf{DA}^{-1}\mathbf{B}+\mathbf{C}^{-1})^{-1}\mathbf{DA}^{-1}\)。
+\subsection*{(2)参数A的最大后验概率估计}
+
+最大后验概率估计为\(\hat{A}_{map}=arg\underset{A}{\max}p(A|\mathbf{Z})\)，由贝叶斯公式\(p(A|\mathbf{Z})=\frac{p(\mathbf{Z}|A)p(A)}{p(\mathbf{Z})}\)，
+最大后验概率估计等价为\(\hat{A}_{map}=arg\underset{A}{\max}p(\mathbf{Z}|A)p(A)\)，已知
+\begin{align*}
+    p(\mathbf{Z}|A) & =(\frac{1}{2\pi \sigma^2})^{\frac{N}{2}}\exp\left\{-\frac{1}{2\sigma^2}\sum_{n=0}^{N-1}(z_n-Ar^n)^2\right\} \\
+    p(A)            & =\frac{1}{\sqrt{2\pi \sigma^2_A}}\exp\{-\frac{A^2}{2\sigma^2_A}\}
+\end{align*}
+
+所以
+\begin{align*}
+    \ln[p(\mathbf{Z}|A)p(A)]=-\frac{N\ln (2\pi \sigma^2)+\ln(2\pi \sigma^2_A)}{2}-\frac{1}{2\sigma^2}\sum_{n=0}^{N-1}(z_n-Ar^n)^2-\frac{1}{2\sigma^2_A}A^2
+\end{align*}
+令\(\ln[p(\mathbf{Z}|A)p(A)]=0\),得到
+\begin{align*}
+    \frac{1}{\sigma^2}\sum_{n=0}^{N-1}r^n(z_n-Ar^n)=\frac{A}{\sigma^2_A}
+\end{align*}
+解得
+\begin{align*}
+    \hat{A}_{map}=\frac{\sigma^2_A}{\sigma^2_A\frac{1-r^{2N}}{1-r^2}+\sigma^2}\sum_{n=0}^{N-1}z_nr^n
+\end{align*}
+与最小均方估计结果相同。
+
+若对参数A没有更多的先验信息，可以考虑用经典估计方法。
+
+\bibliography{books}
+\end{document}

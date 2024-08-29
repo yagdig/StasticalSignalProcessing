@@ -1,0 +1,507 @@
+\documentclass[fontset=windows]{article}
+\usepackage[margin=1in]{geometry}%设置边距，符合Word设定
+\usepackage[UTF8]{ctex}
+\usepackage{setspace}
+\usepackage{amsmath}
+\numberwithin{figure}{section}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{float}
+\usepackage{graphicx}%插入图片
+\usepackage[dvipsnames]{xcolor}
+\usepackage{authblk}
+\usepackage{listings,matlab-prettifier}
+\lstset{
+	language=Matlab, % 设置代码语言为Matlab
+    basicstyle=\ttfamily, % 设置字体为等宽字体
+    numbers=left, % 行号在左边显示
+    numberstyle=\tiny, % 设置行号字体大小
+    stepnumber=1, % 行号递增步长
+    numbersep=5pt, % 行号到代码的距离
+    backgroundcolor=\color{gray!10}, % 设置代码的背景颜色
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single, % 设置代码框
+    rulecolor=\color{black},
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=true,
+    title=\lstname,
+	keywordstyle=\bfseries\color{NavyBlue},
+	morekeywords={var,};
+	emphstyle=\bfseries\color{Rhodamine}, % 强调词样式设置
+    commentstyle=\itshape\color{black!50!white}, % 设置注释样式，斜体，浅灰色
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 设置字符串样式
+	columns=flexible,
+}
+\graphicspath{{Figures/Figures1/}}%文章所用图片在当前目录下的 Figures目录
+
+\usepackage{hyperref} % 对目录生成链接，注：该宏包可能与其他宏包冲突，故放在所有引用的宏包之后
+\hypersetup{colorlinks = true,  % 将链接文字带颜色
+	linkcolor=black, % 将链接文字黑色
+	bookmarksopen = true, % 展开书签
+	bookmarksnumbered = true, % 书签带章节编号
+	} % 作者
+\bibliographystyle{plain}% 参考文献引用格式
+
+\renewcommand{\contentsname}{\centerline{目录}} %经过设置word格式后，将目录标题居中
+
+\title{\heiti\zihao{2} 《统计信号处理》研讨题汇总}
+\author{杨\ 鼎}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%\begin{abstract}
+%	\lipsum[2]
+%\end{abstract}
+
+\tableofcontents
+\setcounter{page}{0}
+\newpage
+
+\section{CRLB,有效估计量}
+对于矢量形式的线型模型 \(\mathbf{z=H}\boldsymbol{\theta}+\mathbf{w}\) ,其中 \(\mathbf{w}\) 为高斯序列,
+\(PDF\)为\(N(\mathbf{0,\sigma^2I})\),(1)试问有效估计量是否存在？CRLB等于多少？
+如果有效估计量存在，该估计量服从什么分布？(2)对于观测模型:z[n]=A+B·n+w[n]
+,n=0,1,…,N-1,其中w[n]是零均值高斯白噪声，方差为\(\sigma^2\),A和B为待估计参数，
+试将此问题转化为线性模型，确定模型的各参数，并求出有效估计量及估计的方差阵。
+
+\subsection*{(1)有效估计量是否存在？}
+
+已知矢量线性模型\(\mathbf{z=H}\boldsymbol{\theta}+\mathbf{w}\)，其中\(\mathbf{w}\sim \mathcal{N} (0,\sigma^2 \mathbf{I})\)
+，则有
+
+\begin{align*}
+    p(\mathbf{z};\boldsymbol{\theta})=(\frac{1}{2\pi \sigma^2})^{\frac{N}{2}}
+    \exp\left[-\frac{1}{2\sigma^2}(\mathbf{z-H\boldsymbol{\theta}})^T
+        (\mathbf{z-H\boldsymbol{\theta}})\right]
+\end{align*}
+
+对数似然函数
+
+\begin{align*}
+    \ln p(\mathbf{z};\boldsymbol{\theta})=-{\frac{N}{2}}\ln (2\pi \sigma^2)
+    -\frac{1}{2\sigma^2}(\mathbf{z-H}\boldsymbol{\theta})^T(\mathbf{z-H}\boldsymbol{\theta})
+\end{align*}
+
+对\(\boldsymbol{\theta}\)求导有
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}
+     & =\frac{\partial}{\partial \boldsymbol{\theta}}\left[-\frac{1}{2\sigma^2}
+    (\mathbf{z-H}\boldsymbol{\theta})^T(\mathbf{z-H}\boldsymbol{\theta})\right]                               \\
+     & = -\frac{1}{2\sigma^2}\frac{\partial}{\partial \boldsymbol{\theta}}\left(\mathbf{z}^T\mathbf{z}
+    -\mathbf{z}^T\mathbf{H}\boldsymbol{\theta}-\boldsymbol{\theta}^T\mathbf{H}^T\mathbf{z}+
+    \boldsymbol{\theta}^T\mathbf{H}^T\mathbf{H}\boldsymbol{\theta}\right)                                     \\
+     & =-\frac{1}{2\sigma^2}\left(-2\mathbf{H}^T\mathbf{z}+2\mathbf{H}^T\mathbf{H}\boldsymbol{\theta} \right) \\
+     & =\frac{1}{\sigma^2}\left(\mathbf{H}^T\mathbf{z}-\mathbf{H}^T\mathbf{H}\boldsymbol{\theta} \right)
+\end{align*}
+
+若存在有效估计量\(\hat{\boldsymbol{\theta}}\)，即\(\hat{\boldsymbol{\theta}}\)无偏且方差达到CRLB，由课本定理3.2,则当且仅当
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=
+    \mathbf{I}(\hat{\boldsymbol{\theta}})(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta})
+\end{align*}
+
+成立，假定\((\mathbf{H}^T\mathbf{H})^{-1}\)可逆，于是
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};\boldsymbol{\theta})}{\partial \mathbf{\boldsymbol{\theta}}}=
+    \frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}\left[\left(\mathbf{H}^T\mathbf{H}\right)^{-1}
+        \mathbf{H}^T\mathbf{z}-\theta\right]
+\end{align*}
+
+因此易知\(\mathbf{I}(\theta)=\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}\)，
+即\(CRLB=\mathbf{I}^{-1}(\theta)=\left(\mathbf{H}^T\mathbf{H}\right)^{-1}\sigma^2\)，
+有效估计量也存在，\(\theta=\left(\mathbf{H}^T\mathbf{H}\right)\mathbf{H}^T\mathbf{z}，
+\hat{\boldsymbol{\theta}} \sim \mathcal{N} (\boldsymbol{\theta},
+\left(\mathbf{H}^T\mathbf{H}\right)^{-1}\sigma^2)\)，
+
+\begin{align*}
+    \left[\mathbf{I}(\theta)\right]_{ij}
+     & =-E\left[\frac{\partial^2 \ln p(\mathbf{z};\boldsymbol{\theta})}{\partial \theta_i \partial \theta_j}\right] \\
+     & =\frac{1}{\sigma^2}\frac{\partial}{\partial \theta}\left(-\mathbf{H}^T\mathbf{H}\theta\right)                \\
+     & =-\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}                                                                    \\
+\end{align*}
+
+所以
+
+\begin{align*}
+    \mathbf{I}(\theta)=
+    -E\left[\frac{\partial^2 \ln p(\mathbf{z};\theta)}{\partial \theta_i \partial \theta_j}\right]
+    =-E\left[-\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}\right]
+    =\frac{\mathbf{H}^T\mathbf{H}}{\sigma^2}
+\end{align*}
+
+\subsection*{(2)将观测模型转化为线性模型}
+
+将\(z[n]=A+Bn+w[n],n=0,1,…,N-1\)转化为\(\mathbf{z}=\mathbf{H}\boldsymbol{\theta}+\mathbf{w}\)，易知
+
+\begin{align*}
+    \theta     & =
+    \begin{bmatrix}
+        A & B
+    \end{bmatrix}^T \\
+    \mathbf{H} & =
+    \begin{bmatrix}
+        1 & 1 & 1 & … & 1   \\
+        0 & 1 & 2 & … & N-1
+    \end{bmatrix}^T
+\end{align*}
+
+似然函数
+
+\begin{align*}
+    p(\mathbf{z};\boldsymbol{\theta})=(\frac{1}{2\pi \sigma^2})^{\frac{N}{2}}
+    \exp\left\{-\frac{1}{2\sigma^2}\left[z[n]-A-Bn\right]\right\}
+\end{align*}
+
+\begin{align*}
+    \ln p(\mathbf{z};\boldsymbol{\theta})=-{\frac{N}{2}}\ln (2\pi \sigma^2)
+    -\frac{1}{2\sigma^2}\sum_{n=0}^{N-1}\left(z[n]-A-Bn\right)^2
+\end{align*}
+
+求导有
+
+\begin{align*}
+    \frac{\partial \ln p}{\partial A}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}\left(z[n]-A-Bn\right)  \\
+    \frac{\partial \ln p}{\partial B}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}\left(z[n]-A-Bn\right)n \\
+    \frac{\partial^2 \ln p}{\partial A^2}
+     & =-\frac{N}{\sigma^2}                                       \\
+    \frac{\partial^2 \ln p}{\partial B^2}
+     & =-\frac{1}{\sigma^2}\sum_{n=0}^{N-1}n^2
+    =-\frac{1}{\sigma^2}\frac{N(N-1)(2n-1)}{6}                    \\
+    \frac{\partial^2 \ln p}{\partial A \partial B}
+     & =-\frac{1}{\sigma^2}\sum_{n=0}^{N-1}n
+    =-\frac{1}{\sigma^2}\frac{N(N-1)}{2}
+\end{align*}
+
+因此Fisher信息矩阵为
+
+\begin{align*}
+    \mathbf{I}(\boldsymbol{\theta})=
+    \begin{bmatrix}
+        -E[\frac{\partial^2 \ln p}{\partial A^2}]          & -E[\frac{\partial^2 \ln p}{\partial A\partial B}] \\
+        -E[\frac{\partial^2 \ln p}{\partial B \partial A}] & -E[\frac{\partial^2 \ln p}{\partial B^2}]
+    \end{bmatrix}
+\end{align*}
+
+因为二阶导数均与z无关，所以
+
+\begin{align*}
+    \mathbf{I}(\boldsymbol{\theta})=
+    \begin{bmatrix}
+        \frac{N}{\sigma^2}                 & \frac{1}{\sigma^2}\frac{N(N-1)}{2}       \\
+        \frac{1}{\sigma^2}\frac{N(N-1)}{2} & \frac{1}{\sigma^2}\frac{N(N-1)(2N-1)}{6}
+    \end{bmatrix}
+\end{align*}
+
+逆矩阵为
+
+\begin{align*}
+    \mathbf{I}^{-1}(\theta)=\sigma^2
+    \begin{bmatrix}
+        \frac{2(2N-1)}{N(N+1)} & -\frac{6}{N(N+1)}   \\
+        -\frac{6}{N(N+1)}      & \frac{12}{N(N^2-1)}
+    \end{bmatrix}
+\end{align*}
+
+所以
+
+\begin{align*}
+    var(\hat{A})=\frac{2(2N-1)\sigma^2}{N(N+1)}
+\end{align*}
+\begin{align*}
+    var(\hat{B})=\frac{12\sigma^2}{N(N^2-1)}
+\end{align*}
+
+根据，由定理3.2可知
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=
+    \mathbf{I}(\hat{\boldsymbol{\theta}})(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta})
+\end{align*}
+
+有
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{z};\theta)}{\partial \theta}=	\begin{bmatrix}
+                                                                   \frac{N}{\sigma^2}                 & \frac{1}{\sigma^2}\frac{N(N-1)}{2}       \\
+                                                                   \frac{1}{\sigma^2}\frac{N(N-1)}{2} & \frac{1}{\sigma^2}\frac{N(N-1)(2N-1)}{6}
+                                                               \end{bmatrix}
+    \begin{bmatrix}
+        \hat{A}-A \\
+        \hat{B}-B
+    \end{bmatrix}
+\end{align*}
+
+解得有效估计量
+
+\begin{align*}
+    \hat{A}=\frac{2(2N-1)}{N(N+1)}\sum_{n=0}^{N-1}z[n]-\frac{6}{N(N+1)}\sum_{n=0}^{N-1}nz[n]
+\end{align*}
+\begin{align*}
+    \hat{B}=-\frac{6}{N(N+1)}\sum_{n=0}^{N-1}z[n]+\frac{12}{N(N^2-1)}\sum_{n=0}^{N-1}nz[n]
+\end{align*}
+
+方差阵\(\mathbf{C}_{\theta}=\mathbf{I}^{-1}(\boldsymbol{\theta})\)
+
+假定z[n]=A+W[n]，其中w[n]是零均值高斯白噪声，(1)方差 \(\sigma^2\)为已知量
+A的估计量为\(\hat{A}=\frac{1}{N}\sum_{n = 0}^{N-1}z[n] \),试用蒙特卡
+洛仿真的方法分析估计量的性能(估计量的均值、方差、PDF)。(2)如果A和 \(\sigma^2\)
+均未知，A和\(\sigma^2\)的估计量分别为\(\hat{A}=\frac{1}{N}\sum_{n=0}^{N-1}z[n]\)
+、\(\sigma^2=\frac{1}{N}\sum_{n=0}^{N-1}(z[n]-\frac{1}{N}\sum_{n=0}^{N-1}z[n])^2\)
+,试用蒙特卡洛仿真的方法分析估计量的性能(估计量的均值、方差、PDF)，并讨论估计量的性能
+随N的变化趋势。
+
+\subsection*{(1)估计量\(\hat{A}\)的性能}
+
+进行一次仿真计算，得到\(E[\hat{A}]=0.09941\),\(var(\hat{A})=0.00095\)，
+PDF仿真结果如图2.1。
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{fig2.1.jpg}
+    \caption{估计量\(\hat{A}\)的PDF}
+    \label{2.1}
+\end{figure}
+
+\subsection*{(2)估计量\(\hat{A}\)和\(\sigma^2\)的性能}
+
+进行一次仿真计算，得到\(E[\hat{A}]=0.10055\),\(var(\hat{A})=0.00093\)。
+估计量\(\hat{A}\)的PDF仿真结果如图2.2。
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{fig2.2.jpg}
+    \caption{估计量\(\hat{A}\)的PDF}
+    \label{2.2}
+\end{figure}
+
+得到\(E[\sigma^2]=1.00011\),\(var(\sigma^2)=0.00196\)。
+估计量\(\sigma^2\)的PDF仿真结果如图2.3。
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{fig2.3.jpg}
+    \caption{估计量\(\sigma^2\)的PDF}
+    \label{2.3}
+\end{figure}
+
+\subsection*{(3)估计量性能随N的变化讨论}
+
+当N从1至1000变化时，估计量\(\hat{A}\)和估计量\(\sigma^2\)的期望变化如图2.4。
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{fig2.4.jpg}
+    \caption{估计量\(\hat{A}\)和\(\sigma^2\)的期望随N增长的变化曲线}
+    \label{2.4}
+\end{figure}
+从图2.4中可以看出，当N等于1000时，估计量\(\hat{A}\)和\(\sigma^2\)的期望接近于各自真值，
+这说明从无偏性角度来看，估计量\(\hat{A}\)和\(\sigma^2\)都应当都是无偏估计。
+
+当N从1至1000变化时，估计量\(\hat{A}\)和估计量\(\sigma^2\)的方差的自然对数
+(即ln(var(\(\hat{A}\)))和ln(var(\(\sigma^2\))))变化如图2.5。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{fig2.5.jpg}
+    \caption{估计量\(\hat{A}\)和\(\sigma^2\)的方差自然对数ln(var)随N增长的变化曲线}
+    \label{2.5}
+\end{figure}
+
+由于估计量\(\hat{A}\)和估计量\(\sigma^2\)的收敛速度均较快，为对比明显起见，
+图2.5中纵轴均取估计量方差的自然对数。从图2.5可以看出，随着N的增大，
+估计量\(\hat{A}\)和估计量\(\sigma^2\)的方差均逐渐减小，且收敛速度接近。
+这说明从有效性角度来看，估计量\(\hat{A}\)和估计量\(\sigma^2\)有效性接近。
+
+\section{正弦信号参数估计CRLB}
+假定雷达接收信号可以表示为\(s=Acos(2\pi fn+\varphi)+w(n),n=1,…,N\),N为观测次数
+,\(w(n)\sim\mathcal{N}(0,\sigma^2)\)。
+
+(1)A、\(\sigma^2\)已知，均为确定参数，\(f\)未知,\(0<f<\frac{1}{2}\)。试推导\(f\)估计的CRLB
+，采用MATLAB画出CRLB随频率、信噪比 、观测次数的变化曲线。
+
+(2)若A、\(\varphi\)、\(f\)均未知，试推导\(f\)估计的CRLB，采用MATLAB画出CRLB随其影响参数的
+变化曲线。并对比分析此时\(f\)估计方差的CRLB与第(1)问中\(f\)估计方差的CRLB。
+
+(3)若噪声\(w(n)\)服从瑞利分布，噪声平均功率与高斯分布情况下相同，试再次分析
+第(1)、(2)问中参数估计的CRLB。并分析导致CRLB差异的原因。
+
+\subsection*{(1) A、\(\sigma^2\)已知，均为确定参数，\(f\)未知}
+
+已知\(x[n]=s[n;\theta]+w[n]\),其中\(s=Acos(2\pi f n +\varphi + w(n))\),
+n=1,…,N，\(w(n)\sim \mathcal{N} (0,\sigma^2)\)。极大似然函数
+
+\begin{align*}
+    p(\mathbf{x};\theta)=(\frac{1}{2\pi \sigma^2})^{\frac{N}{2}}
+    \exp\{ -\frac{1}{2\sigma^2}\sum_{n=0}^{N-1}(x[n]-s[n;\theta])^2 \}
+\end{align*}
+一次求导得到
+\begin{align*}
+    \frac{\partial p(\mathbf{x};\theta)}{\partial \theta}=
+    \frac{1}{\sigma^2}\sum_{n=0}^{N-1}(x[n]-s[n;\theta])\frac{\partial s[n;\theta]}{\partial\theta}
+\end{align*}
+二次求导得到
+\begin{align*}
+    \frac{\partial^2 p(\mathbf{x};\theta)}{\partial \theta}=
+    \frac{1}{\sigma^2}\sum_{n=0}^{N-1}\{(x[n]-s[n;\theta])
+    \frac{\partial^2 s[n;\theta]}{\partial\theta^2}
+    -\left(\frac{s[n;\theta]}{\theta}\right)^2\}
+\end{align*}
+取数学期望后得到
+\begin{align*}
+    E\left(\frac{\partial^2 p(\mathbf{x};\theta)}{\partial \theta}\right)=
+    -\frac{1}{\sigma^2}\sum_{n=0}^{N-1}
+    \left(\frac{s[n;\theta]}{\theta}\right)^2
+\end{align*}
+将\(s=Acos(2\pi f n +\varphi + w(n))\)带入得到
+\begin{align*}
+    E\left(\frac{\partial^2 p(\mathbf{x};\theta)}{\partial \theta}\right)=
+    -\frac{A^2}{\sigma^2}\sum_{n=0}^{N-1}
+    \left[2\pi f n \sin(2\pi f n+\varphi)\right]^2
+\end{align*}
+得到CRLB为
+\begin{align*}
+    var(\hat{f})
+    \geq \frac{\sigma^2}{A^2 \sum_{n=0}^{N-1}
+        \left[2\pi f n \sin(2\pi f n+\varphi)\right]^2}
+    =	\frac{1}{\eta ^2 \sum_{n=0}^{N-1}
+        \left[2\pi f n \sin(2\pi f n+\varphi)\right]^2}
+\end{align*}
+
+\subsection*{(2) A、\(\varphi\)、\(f\)均未知}
+如果A、\(\varphi\)、\(f\)均未知,估计量\(\boldsymbol{\theta}=[Af\phi]^T\)，由于
+
+\begin{align*}
+    [\mathbf{I}(\boldsymbol{\theta})]_{ij}=\frac{1}{\sigma^2}\sum_{n=0}^{N-1}
+    \frac{\partial s[n;\boldsymbol{\theta}]}{\partial \theta_i}
+    \frac{\partial s[n;\boldsymbol{\theta}]}{\partial \theta_j}
+\end{align*}
+
+如果\(f\)不靠近0或者1/2，对于\(i=0,1,2\)
+
+\begin{align*}
+    \frac{1}{N^{i+1}}\sum_{n=0}^{N-1}n^i\sin(4\pi f n+2\varphi)\approx 0 \\
+    \frac{1}{N^{i+1}}\sum_{n=0}^{N-1}n^i\cos(4\pi f n+2\varphi)\approx 0
+\end{align*}
+
+利用近似，并且令\(\alpha=2\pi fn+\varphi\)，得到
+
+\begin{align*}
+    [\mathbf{I}(\boldsymbol{\theta})]_{11}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}\cos^2 \alpha
+    =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}\left(\frac{1}{2}-\frac{1}{2}\cos2\alpha\right)
+    \approx\frac{N}{2\sigma^2}                                           \\
+    [\mathbf{I}(\boldsymbol{\theta})]_{12}
+     & =-\frac{1}{\sigma^2}\sum_{n=0}^{N-1}A2\pi n \cos\alpha \sin\alpha
+    =-\frac{\pi A}{\sigma^2}\sum_{n=0}^{N-1}n\sin 2\alpha
+    \approx 0                                                            \\
+    [\mathbf{I}(\boldsymbol{\theta})]_{13}
+     & =-\frac{1}{\sigma^2}\sum_{n=0}^{N-1}A\cos\alpha \sin\alpha
+    =-\frac{A}{2\sigma^2}\sum_{n=0}^{N-1}\sin 2\alpha
+    \approx 0                                                            \\
+    [\mathbf{I}(\boldsymbol{\theta})]_{22}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}A^2(2\pi n)^2\sin^2 \alpha
+    =\frac{(2\pi A)^2}{\sigma^2}\sum_{n=0}^{N-1}n^2\left(\frac{1}{2}-
+    \frac{1}{2}\cos2\alpha\right)                                        \\
+     & \approx\frac{(2\pi A)^2}{2\sigma^2}\sum_{n=0}^{N-1}n^2            \\
+    [\mathbf{I}(\boldsymbol{\theta})]_{23}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}(2\pi nA)^2 \sin^2\alpha
+    \approx \frac{\pi A^2}{\sigma^2}\sum_{n=0}^{N-1}n                    \\
+    [\mathbf{I}(\boldsymbol{\theta})]_{33}
+     & =\frac{1}{\sigma^2}\sum_{n=0}^{N-1}A^2\sin^2 \alpha
+    \approx \frac{NA^2}{2\sigma^2}
+\end{align*}
+
+Fisher信息矩阵为
+
+\begin{align*}
+    \mathbf{I}(\boldsymbol{\theta})=\frac{1}{\sigma^2}
+    \begin{bmatrix}
+        \frac{N}{2} & 0                             & 0                        \\
+        0           & 2\pi^2 A^2\sum_{n=0}^{N-1}n^2 & \pi A^2\sum_{n=0}^{N-1}n \\
+        0           & \pi A^2\sum_{n=0}^{N-1}n      & \frac{NA^2}{2}
+    \end{bmatrix}
+\end{align*}
+
+从而得到
+
+\begin{align*}
+    var(\hat{f}) \geq \frac{12}{(2\pi)^2\eta N (N^2-1)}
+\end{align*}
+
+其中\(\eta=A^2/(2\sigma^2)\)是SNR。
+\subsection*{(3) \(w(n)\)服从瑞利分布}
+假设\(w[n]\)服从瑞利分布，分布函数为
+
+\begin{align*}
+    f(x)=\left\{
+    \begin{matrix}
+        \frac{x}{\sigma_0^2} \exp -\frac{x^2}{2\sigma_0 ^2} & x = 0 \\
+        0                                                   & x<0
+    \end{matrix}
+    \right.
+\end{align*}
+
+期望为\(\sqrt{\frac{\pi}{2}}\sigma_0\)，方差为\((2-\sqrt{\frac{\pi}{2}})\sigma_0\)。
+似然函数变为
+
+\begin{align*}
+    p(\mathbf{x};\theta)=\prod_{n=0}^{N-1}\frac{x[n]-s[n;\theta]}{\sigma_0^2}
+    \exp \left\{ -\frac{(x[n]-s[n;\theta])^2}{2\sigma_0^2}\right\}
+\end{align*}
+
+对数似然函数
+
+\begin{align*}
+    \ln p(\mathbf{x};\theta)=-2N\ln \sigma_0+\sum_{n=0}^{N-1}\ln (x[n]-s[x,\theta])
+    -\frac{(x[n]-s[n;\theta])^2}{2\sigma^2}
+\end{align*}
+
+按照(1)中条件，
+对对数似然函数求一阶导
+
+\begin{align*}
+    \frac{\partial \ln p(\mathbf{x};\theta)}{\partial \theta}
+     & =\sum_{n=0}^{N-1}\frac{-1}{x[n]-s[n;\theta]}\frac{\partial s[n;\theta]}{\partial \theta}
+    +\frac{x[n]-s[n;\theta]}{\sigma_0^2}\frac{\partial s[n;\theta]}{\partial \theta}            \\
+     & =\sum_{n=0}^{N-1}\frac{\partial s[n;\theta]}{\partial \theta}
+    \left[\frac{x[n]-s[n;\theta]}{\sigma_0^2}-\frac{1}{x[n]-s[n;\theta]}\right]
+\end{align*}
+
+二阶导为
+
+\begin{align*}
+    \frac{\partial^2 \ln p(\mathbf{x};\theta)}{\partial \theta^2}=
+    \sum_{n=0}^{N-1} & \frac{\partial^2 s[n;\theta]}{\partial \theta^2}
+    \left[\frac{x[n]-s[n;\theta]}{\sigma_0^2}-\frac{1}{x[n]-s[n;\theta]}\right]     \\
+                     & -\left(\frac{\partial s[n;\theta]}{\partial \theta}\right)^2
+    \left[\frac{1}{\sigma_0^2}+\frac{1}{(x[n]-s[n;\theta])^2}\right]
+\end{align*}
+
+由于瑞利分布的均值为\(\sqrt{\frac{\pi}{2}}\sigma_0\)，所以
+
+\begin{align*}
+    E\left[\frac{\partial^2 \ln p(\mathbf{x};\theta)}{\partial \theta^2}\right]
+    =\frac{1}{\sigma_0^2}\sum_{n=0}^{N-1}(\sqrt{\frac{\pi}{2}}-\sqrt{\frac{2}{\pi}})\sigma_0
+    \frac{\partial^2 s[n;\theta]}{\partial \theta^2}
+    -(\frac{2}{\pi}+1)\left(\frac{\partial s[n;\theta]}{\partial \theta}\right)^2
+\end{align*}
+
+将\(s=A\cos (2\pi fn+\varphi)\)带入上式得到
+
+\begin{align*}
+    E\left[\frac{\partial^2 \ln p(\mathbf{x};\theta)}{\partial \theta^2}\right]
+    =\frac{(2\pi n)^2A^2}{\sigma_0^2}\sum_{n=0}^{N-1}(\sqrt{\frac{2}{\pi}}-
+    \sqrt{\frac{\pi}{2}})\frac{\sigma_0}{A}\cos (2\pi fn+\varphi)
+    -(\frac{2}{\pi}+1)(\sin 2\pi n+\varphi)^2
+\end{align*}
+
+
+\bibliography{books}
+\end{document}

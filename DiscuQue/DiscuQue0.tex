@@ -1,0 +1,141 @@
+\documentclass[fontset=windows]{article}
+\usepackage[margin=1in]{geometry}%设置边距，符合Word设定
+\usepackage[UTF8]{ctex}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\numberwithin{figure}{section}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{float}
+\usepackage{graphicx}%插入图片
+\usepackage[dvipsnames]{xcolor}
+\usepackage{authblk}
+\usepackage{listings,matlab-prettifier}
+\lstset{
+	language=Matlab, % 设置代码语言为Matlab
+    basicstyle=\ttfamily, % 设置字体为等宽字体
+    numbers=left, % 行号在左边显示
+    numberstyle=\tiny, % 设置行号字体大小
+    stepnumber=1, % 行号递增步长
+    numbersep=5pt, % 行号到代码的距离
+    backgroundcolor=\color{gray!10}, % 设置代码的背景颜色
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single, % 设置代码框
+    rulecolor=\color{black},
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=true,
+    title=\lstname,
+	keywordstyle=\bfseries\color{NavyBlue},
+	morekeywords={var,};
+	emphstyle=\bfseries\color{Rhodamine}, % 强调词样式设置
+    commentstyle=\itshape\color{black!50!white}, % 设置注释样式，斜体，浅灰色
+    stringstyle=\bfseries\color{PineGreen!90!black}, % 设置字符串样式
+	columns=flexible,}
+\graphicspath{{Figures2/}}%文章所用图片在当前目录下的 Figures目录
+
+\usepackage{hyperref} % 对目录生成链接，注：该宏包可能与其他宏包冲突，故放在所有引用的宏包之后
+\hypersetup{colorlinks = true,  % 将链接文字带颜色
+	linkcolor=black, % 将链接文字黑色
+	bookmarksopen = true, % 展开书签
+	bookmarksnumbered = true, % 书签带章节编号
+	} % 作者
+\bibliographystyle{plain}% 参考文献引用格式
+
+\renewcommand{\contentsname}{\centerline{目录}} %经过设置word格式后，将目录标题居中
+
+\title{\heiti\zihao{2} 《统计信号处理》讨论题零：随机变量函数}
+\author{杨 鼎}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+%\begin{abstract}
+%	\lipsum[2]
+%\end{abstract}
+
+%\tableofcontents
+%\setcounter{page}{0}
+%\newpage
+
+\section{第一题}
+已知随机变量X的概率密度为\(f_X(x)\),且\(Y=X\),则X和Y的联合概率密度\(f_{XY}(x,y)=?\)
+
+随机变量X的概率密度函数为\(f_X(x)\)，则其概率分布函数为
+\begin{align*}
+    F_X(x)=P(X\leq x)=\int_{-\infty}^{x} f_X(t)dt
+\end{align*},
+由\(Y=X\)可知，Y的概率分布函数\(F_Y(y)=\int_{-\infty}^{y}f_Y(t)dt\).
+
+X和Y的联合概率分布函数为\(F_{XY}(x,y)=P(X\leq x,Y\leq y)\),由于\(X=Y\),
+\begin{align*}
+    P(X\leq x,Y\leq y)
+     & =P(X\leq \min(x,y),Y\leq \min(x,y)) \\
+     & =P(X\leq \min(x,y))                 \\
+     & =P(Y\leq \min(x,y))
+\end{align*}
+
+
+
+于是X和Y的联合概率分布函数为
+\begin{align*}
+    F_{XY}(x,y)=P(X\leq \min(x,y))=\int_{-\infty}^{\min(x,y)} f_{X}(t)dt
+\end{align*}
+
+注意到\(\min(x,y)\)可以写为\(\frac{x+y-|x-y|}{2}\),X和Y的联合概率密度函数
+\begin{align*}
+    f_{XY}(x,y)
+     & =\frac{\partial^2}{\partial x \partial y}F_{XY}(x,y)=\frac{\partial^2}{\partial x \partial y} \int_{-\infty}^{\min(x,y)} f_{X}(t)dt \\
+     & =\frac{\partial^2}{\partial x \partial y} \int_{-\infty}^{\frac{x+y-|x-y|}{2}} f_{X}(t)dt                                           \\
+     & =\frac{\partial}{\partial x}\left[f_X(\frac{x+y-|x-y|}{2})\cdot\frac{1}{2}(1+\frac{|x-y|}{x-y}) \right]                             \\
+     & =\frac{\partial}{\partial x}\left[f_X(\frac{x+y-|x-y|}{2})u(x-y) \right]                                                            \\
+     & =\frac{\partial}{\partial x}\left[f_X(y)u(x-y) \right]                                                                              \\
+     & =f_X(y)\delta(x-y)
+\end{align*}
+或
+\begin{align*}
+    f_{XY}(x,y)
+     & =\frac{\partial^2}{\partial y \partial x}F_{XY}(x,y)                                                    \\
+     & =\frac{\partial^2}{\partial y \partial x} \int_{-\infty}^{\frac{x+y-|x-y|}{2}} f_{X}(t)dt               \\
+     & =\frac{\partial}{\partial y}\left[f_X(\frac{x+y-|x-y|}{2})\cdot\frac{1}{2}(1-\frac{|x-y|}{x-y}) \right] \\
+     & =\frac{\partial}{\partial y}\left[f_X(\frac{x+y-|x-y|}{2})u(y-x) \right]                                \\
+     & =\frac{\partial}{\partial y}\left[f_X(x)u(y-x) \right]                                                  \\
+     & =f_X(x)\delta(y-x)
+\end{align*}
+
+\section{第二题}
+已知随机变量X的概率密度为\(f_X(x)\)，且\(Y=g(X)\)，其中\(g(\cdot)\)为确定性的函数，
+则X和Y的联合概率密度\(f_{XY}=?\)
+
+随机变量X的概率密度函数为\(f_X(x)\)，则其概率分布函数为
+\begin{align*}
+    F_X(x)=P(X\leq x)=\int_{-\infty}^{x} f_X(t)dt
+\end{align*}
+
+X和Y的联合概率密度函数为\(f_{XY}(x,y)=f_{Y|X}(y|x)f_X(x)\),\(f_X(x)\)已知，下面计算\(f_{Y|X}(y|x)\)。
+
+由于\(Y=g(X)\),所以若\(y<g(x),P(Y<y|x)=0\),若\(y>g(x),P(Y<y|x)=1\),即
+\begin{align*}
+    F_{Y|X}(y|x) & =P(Y<y|x)  \\
+                 & =\left\{
+    \begin{matrix}
+        1 & ,y\geq  g(x) \\
+        0 & ,y< g(x)
+    \end{matrix}
+    \right.                   \\
+                 & =u(y-g(x))
+\end{align*}
+所以
+\begin{align*}
+    f_{Y|X}(y|x)=\frac{\partial F_{Y|X}(y|x)}{\partial y}=\delta(y-g(x))
+\end{align*}
+
+于是\(f_{XY}(x,y)=f_{Y|X}(y|x)f_X(x)=f_X(x)\delta(y-g(x))\)。
+
+\bibliography{books}
+\end{document}
